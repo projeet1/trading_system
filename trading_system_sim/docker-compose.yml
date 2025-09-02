@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  market-data:
+    build: .
+    command: python market_data/feed_generator.py
+    ports:
+      - "8765:8765"
+    volumes:
+      - .:/app
+    working_dir: /app
+
+  trading-system:
+    build: .
+    command: python main.py
+    depends_on:
+      - market-data
+    volumes:
+      - .:/app
+    working_dir: /app
+
+  dashboard:
+    build: .
+    command: python analytics/dashboard.py
+    ports:
+      - "5000:5000"
+    depends_on:
+      - trading-system
+    volumes:
+      - .:/app
+    working_dir: /app
